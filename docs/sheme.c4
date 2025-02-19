@@ -1,0 +1,87 @@
+specification {
+    element service
+    element database
+    element queue
+}
+
+model {
+    service api_gateway 'API Gateway' {
+        description '
+            REST API Gateway that:
+            - Routes requests from UI to appropriate services
+            - Handles API composition
+            - Provides unified REST API interface
+        '
+    }
+
+    service user_service 'User Service' {
+        description '
+            - User registration and authentication
+            - User profile management 
+            - Business account management
+            - Role management
+        '
+    }
+
+    service stats 'Statistics Service' {
+        description '
+            - View counts
+            - Like counts
+            - Comment counts
+            - Analytics for business accounts
+        '
+    }
+    
+    service promo 'Promotion Service' {
+        description '
+            - Promo posts/offers management
+            - Comments and nested comments
+            - Feed generation and filtering
+        '
+    }
+
+    database user_db 'User Database' {
+        description 'PostgreSQL - Stores user profiles and auth data'
+        style {
+            icon tech:postgresql
+            shape cylinder
+        }
+    }
+
+    database stats_db 'Statistics Database' {
+        description 'ClickHouse - Stores analytics data'
+        style {
+            shape cylinder
+        }
+    }
+
+    database promo_db 'Promotion Database' {
+        description 'PostgreSQL/Cassandra - Stores promos and comments'
+        style {
+            icon tech:cassandra
+            shape cylinder
+        }
+    }
+
+    queue message_broker 'Message Broker' {
+        description 'Handles async events for statistics'
+    }
+
+    api_gateway -> user_service 'User operations via HTTP'
+    api_gateway -> promo 'Promo operations via HTTP'
+    api_gateway -> stats 'Get statistics via HTTP'
+
+    user_service -> user_db 'Stores data'
+    
+    promo -> promo_db 'Stores data'
+    promo -> message_broker 'Publishes view/like/comment events'
+
+    message_broker -> stats 'Consumes events'
+    stats -> stats_db 'Stores data'
+}
+
+views {
+    view api_gateway {
+        include *
+    }
+}
