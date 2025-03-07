@@ -2,6 +2,7 @@
 erDiagram
     USERS ||--o{ BUSINESSES : "owns"
     USERS ||--o{ USER_ROLES: "has"
+    USERS ||--o{ SESSIONS: "has"
     
     USERS {
         uuid id PK
