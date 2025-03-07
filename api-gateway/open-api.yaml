@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: API Gateway
+  description: API Gateway for microservices architecture
+  version: 1.0.0
+  
+servers:
+  - url: /api/v1
+    description: Base API path
+
+tags:
+  - name: auth
+    description: Authentication operations
+  - name: users
+    description: User management operations
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register a new user
+      description: Create a new user account with login, password and email
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Authenticate user
+      description: Login with username and password
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    UserRegistration:
+      type: object
+      required:
+        - login
+        - password
+        - email
+      properties:
+        login:
+          type: string
+          description: User login name
+          example: "john_doe"
+        password:
+          type: string
+          format: password
+          description: User password
+          example: "SecureP@ssw0rd"
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: "john.doe@example.com"
+    
+    UserLogin:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: User login name
+          example: "john_doe"
+        password:
+          type: string
+          format: password
+          description: User password
+          example: "SecureP@ssw0rd"
+    
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User unique identifier
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        login:
+          type: string
+          description: User login name
+          example: "john_doe"
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: "john.doe@example.com"
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+          example: "2023-01-01T12:00:00Z"
+    
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT authentication token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjNlNDU2Ny1lODliLTEyZDMtYTQ1Ni00MjY2MTQxNzQwMDAiLCJleHAiOjE2MTY3NjY5MDB9.8Iy6iFPYXaCt_DO6hBQ8DNlVHJ9RJcFD-_6L5bDUEMM"
+        expiresAt:
+          type: string
+          format: date-time
+          description: Token expiration timestamp
+          example: "2023-01-01T14:00:00Z"
+        user:
+          $ref: '#/components/schemas/UserResponse'
+    
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "Bad request"
+        details:
+          type: array
+          items:
+            type: string
+          description: Detailed error information
+          example: ["Password must be at least 8 characters long"]
+
+
