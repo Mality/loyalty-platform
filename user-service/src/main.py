@@ -1,17 +1,15 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, String, DateTime, Boolean
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
-import uuid
 import os
-import jwt
+from jose import jwt
 from passlib.context import CryptContext
 import uvicorn
-from model import *
+from model import Base, User, UserRegistration, UserLogin, UserResponse, UserProfile, UserProfileUpdate, Error, AuthResponse
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
@@ -85,7 +83,7 @@ async def get_current_user(authorization: str = Header(None), db: Session = Depe
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-    except jwt.PyJWTError:
+    except jwt.JWTError:
         raise credentials_exception
         
     user = get_user_by_id(db, user_id)

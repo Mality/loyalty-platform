@@ -28,6 +28,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserRegistration'
+            examples:
+              registerUser:
+                summary: Register a new user
+                value:
+                  login: "john_doe"
+                  password: "SecureP@ssw0rd"
+                  email: "john.doe@example.com"
       responses:
         '201':
           description: User successfully registered
@@ -35,18 +42,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
+              examples:
+                registerSuccess:
+                  summary: Successful registration response
+                  value:
+                    id: "123e4567-e89b-12d3-a456-426614174000"
+                    login: "john_doe"
+                    email: "john.doe@example.com"
+                    createdAt: "2023-01-01T12:00:00Z"
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                invalidInput:
+                  summary: Invalid input error
+                  value:
+                    code: 400
+                    message: "Bad request"
+                    details: ["Password must be at least 8 characters long"]
         '409':
           description: User already exists
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                userExists:
+                  summary: User already exists error
+                  value:
+                    code: 409
+                    message: "User with this login already exists"
   
   /auth/login:
     post:
@@ -61,6 +89,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserLogin'
+            examples:
+              loginUser:
+                summary: Login with credentials
+                value:
+                  login: "john_doe"
+                  password: "SecureP@ssw0rd"
       responses:
         '200':
           description: Successful authentication
@@ -68,12 +102,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
+              examples:
+                loginSuccess:
+                  summary: Successful login response
+                  value:
+                    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjNlNDU2Ny1lODliLTEyZDMtYTQ1Ni00MjY2MTQxNzQwMDAiLCJleHAiOjE2MTY3NjY5MDB9.8Iy6iFPYXaCt_DO6hBQ8DNlVHJ9RJcFD-_6L5bDUEMM"
+                    expiresAt: "2023-01-01T14:00:00Z"
+                    user:
+                      id: "123e4567-e89b-12d3-a456-426614174000"
+                      login: "john_doe"
+                      email: "john.doe@example.com"
+                      createdAt: "2023-01-01T12:00:00Z"
         '401':
           description: Invalid credentials
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                invalidCredentials:
+                  summary: Invalid credentials error
+                  value:
+                    code: 401
+                    message: "Invalid credentials"
   
   /users/profile:
     get:
@@ -91,12 +142,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProfile'
+              examples:
+                profileData:
+                  summary: User profile data
+                  value:
+                    id: "123e4567-e89b-12d3-a456-426614174000"
+                    login: "john_doe"
+                    firstName: "John"
+                    lastName: "Doe"
+                    birthDate: "1990-01-01"
+                    email: "john.doe@example.com"
+                    phoneNumber: "+79123456789"
+                    address: "123 Main St, City"
+                    avatar: "https://example.com/avatar.jpg"
+                    createdAt: "2023-01-01T12:00:00Z"
+                    updatedAt: "2023-01-15T14:30:00Z"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                unauthorized:
+                  summary: Unauthorized error
+                  value:
+                    code: 401
+                    message: "Could not validate credentials"
     
     put:
       tags:
@@ -112,6 +184,17 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserProfileUpdate'
+            examples:
+              updateProfile:
+                summary: Update user profile
+                value:
+                  firstName: "John"
+                  lastName: "Doe"
+                  birthDate: "1990-01-01"
+                  email: "new.email@example.com"
+                  phoneNumber: "+79123456789"
+                  address: "456 New St, City"
+                  avatar: "https://example.com/new-avatar.jpg"
       responses:
         '200':
           description: Profile successfully updated
@@ -119,18 +202,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProfile'
+              examples:
+                updatedProfile:
+                  summary: Updated profile data
+                  value:
+                    id: "123e4567-e89b-12d3-a456-426614174000"
+                    login: "john_doe"
+                    firstName: "John"
+                    lastName: "Doe"
+                    birthDate: "1990-01-01"
+                    email: "new.email@example.com"
+                    phoneNumber: "+79123456789"
+                    address: "456 New St, City"
+                    avatar: "https://example.com/new-avatar.jpg"
+                    createdAt: "2023-01-01T12:00:00Z"
+                    updatedAt: "2023-01-15T14:30:00Z"
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                invalidEmail:
+                  summary: Invalid email error
+                  value:
+                    code: 400
+                    message: "Email already in use"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                unauthorized:
+                  summary: Unauthorized error
+                  value:
+                    code: 401
+                    message: "Could not validate credentials"
 
 components:
   securitySchemes:
