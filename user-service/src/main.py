@@ -9,7 +9,7 @@ import os
 from jose import jwt
 from passlib.context import CryptContext
 import uvicorn
-from model import Base, User, UserRegistration, UserLogin, UserResponse, UserProfile, UserProfileUpdate, Error, AuthResponse
+from src.model import Base, User, UserRegistration, UserLogin, UserResponse, UserProfile, UserProfileUpdate, Error, AuthResponse
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
