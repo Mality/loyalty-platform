@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package promo;
+
+service PromoService {
+  rpc CreatePromo (PromoRequest) returns (PromoResponse) {}
+  rpc ListPromos (PromoListRequest) returns (PromoListResponse) {}
+  rpc GetPromo (PromoRequest) returns (PromoResponse) {}
+  rpc UpdatePromo (PromoUpdateRequest) returns (PromoResponse) {}
+  rpc DeletePromo (PromoDeleteRequest) returns (Empty) {}
+}
+
+message Empty {}
+
+message PromoRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string creator_id = 4;
+  float discount_amount = 5;
+  string code = 6;
+}
+
+message PromoUpdateRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional float discount_amount = 4;
+  optional string code = 5;
+}
+
+message PromoListRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message PromoResponse {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string creator_id = 4;
+  float discount_amount = 5;
+  string code = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message PromoListResponse {
+  repeated PromoResponse items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+  int32 pages = 5;
+}
+
+message PromoDeleteRequest {
+  string id = 1;
+} 
