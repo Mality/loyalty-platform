@@ -13,6 +13,8 @@ tags:
     description: Authentication operations
   - name: users
     description: User management operations
+  - name: promos
+    description: Promotion code operations
 
 paths:
   /auth/register:
@@ -75,7 +77,201 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /promos:
+    post:
+      tags:
+        - promos
+      summary: Create a new promo code
+      description: Create a new promotion code
+      operationId: createPromo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoCreate'
+      responses:
+        '201':
+          description: Promo code successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    get:
+      tags:
+        - promos
+      summary: Get paginated list of promo codes
+      description: Retrieve a paginated list of promotion codes
+      operationId: getPromos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of promo codes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /promos/{id}:
+    get:
+      tags:
+        - promos
+      summary: Get promo code by ID
+      description: Retrieve a specific promotion code by its ID
+      operationId: getPromoById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Promo code ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Promo code details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Promo code not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    put:
+      tags:
+        - promos
+      summary: Update promo code
+      description: Update an existing promotion code
+      operationId: updatePromo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Promo code ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoUpdate'
+      responses:
+        '200':
+          description: Promo code successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Promo code not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      tags:
+        - promos
+      summary: Delete promo code
+      description: Delete an existing promotion code
+      operationId: deletePromo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Promo code ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Promo code successfully deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Promo code not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     UserRegistration:
       type: object
@@ -153,6 +349,118 @@ components:
         user:
           $ref: '#/components/schemas/UserResponse'
     
+    PromoCreate:
+      type: object
+      required:
+        - name
+        - description
+        - discountAmount
+        - code
+      properties:
+        name:
+          type: string
+          description: Promotion name
+          example: "Summer Sale"
+        description:
+          type: string
+          description: Detailed description of the promotion
+          example: "Special discount for summer season"
+        discountAmount:
+          type: number
+          format: float
+          description: Discount amount (percentage)
+          example: 15.5
+        code:
+          type: string
+          description: Unique promo code
+          example: "SUMMER2023"
+    
+    PromoUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Promotion name
+          example: "Summer Sale"
+        description:
+          type: string
+          description: Detailed description of the promotion
+          example: "Special discount for summer season"
+        discountAmount:
+          type: number
+          format: float
+          description: Discount amount (percentage)
+          example: 15.5
+        code:
+          type: string
+          description: Unique promo code
+          example: "SUMMER2023"
+    
+    PromoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Promo unique identifier
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          description: Promotion name
+          example: "Summer Sale"
+        description:
+          type: string
+          description: Detailed description of the promotion
+          example: "Special discount for summer season"
+        creatorId:
+          type: string
+          format: uuid
+          description: ID of the user who created the promo
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        discountAmount:
+          type: number
+          format: float
+          description: Discount amount (percentage)
+          example: 15.5
+        code:
+          type: string
+          description: Unique promo code
+          example: "SUMMER2023"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2023-01-01T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2023-01-01T14:00:00Z"
+    
+    PromoList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromoResponse'
+        total:
+          type: integer
+          description: Total number of items
+          example: 100
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          description: Number of items per page
+          example: 10
+        pages:
+          type: integer
+          description: Total number of pages
+          example: 10
+    
     Error:
       type: object
       properties:
@@ -170,5 +478,3 @@ components:
             type: string
           description: Detailed error information
           example: ["Password must be at least 8 characters long"]
-
-
